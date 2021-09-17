@@ -1,0 +1,1 @@
+alter table public.Игроки ADD constraint rating_check check (Рейтинг > 0);
