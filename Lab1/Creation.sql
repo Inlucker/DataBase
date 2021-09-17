@@ -1,3 +1,9 @@
+drop table public.Players cascade;
+drop table public.Teams cascade;
+drop table public.PlayersTeams cascade;
+drop table public.Commentators cascade;
+drop table public.Matches cascade;
+
 create table public.Players
 (
 	player_id serial primary key,
@@ -34,7 +40,8 @@ create table public.Commentators
 	nickname text,
 	first_name text,
 	second_name text,
-	country text
+	country text,
+	age int
 );
 
 create table public.Matches
@@ -50,9 +57,3 @@ create table public.Matches
 	tournament_name text,
 	date text
 );
-
-drop table public.Players cascade;
-drop table public.Teams cascade;
-drop table public.PlayersTeams cascade;
-drop table public.Commentators cascade;
-drop table public.Matches cascade;

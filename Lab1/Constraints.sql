@@ -1,5 +1,5 @@
 alter table public.Players ADD constraint nickname_check check (nickname is not null);
-alter table public.Players ADD constraint age_check check (age > 0);
+alter table public.Players ADD constraint age_check check (age>=9 and age <= 100);
 alter table public.Players ADD constraint main_role_check
 			check (main_role IN ('SafeLaner', 'MidLaner', 'OffLaner', 'SoftSupport', 'HardSupport'));
 alter table public.Players ADD constraint rating_check check (rating > 0);
@@ -14,6 +14,7 @@ alter table public.PlayersTeams ADD constraint cur_role_check
 			
 		
 alter table public.Commentators ADD constraint nickname_check check (nickname is not null);
+alter table public.Commentators ADD constraint age_check check (age>=9 and age <= 100);
 
 
 alter table public.Matches ADD constraint team1_id_check check (team1_id is not null);
@@ -31,7 +32,6 @@ insert into public.Teams(team_id) values(1);
 
 
 insert into public.Commentators(commentator_id) values(0);
-
 
 insert into public.Matches(team1_id, team2_id, winner_id, commentator_id)
 			values(0, 1, null, 0);
