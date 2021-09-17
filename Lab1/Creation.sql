@@ -1,60 +1,58 @@
-create table public.Игроки
+create table public.Players
 (
 	player_id int primary key,
-	Псевдоним text,
-	ФИО text,
-	Страна text,
-	Возраст int,
-	Роль text,
-	Рейтинг int
+	nickname text,
+	first_name text,
+	second_name text,
+	country text,
+	age int,
+	main_role text,
+	rating int
 );
 
-insert into public.Игроки(player_id, Рейтинг) values(-1, -100);
-insert into public.Игроки(player_id, Псевдоним, ФИО, Страна, Возраст, Роль, Рейтинг)
-				   values(3, 'Inlucker', 'FIO', 'Rus', 18, 'Offlaner', 7000);
-
-create table public.Команды
+create table public.Teams
 (
 	team_id int primary key,
-	Название text,
-	Страна text,
-	Спонсор text,
-	Средний_рейтинг int
+	name text,
+	country text,
+	sponsor text,
+	avg_rating int
 );
 
-create table public.ИгрокиКоманды
+create table public.PlayersTeams
 (
 	player_id int,
 	team_id int,
-	FOREIGN KEY (player_id) REFERENCES public.Игроки (player_id),
-	FOREIGN KEY (team_id) REFERENCES public.Команды (team_id),
-	Роль text
+	FOREIGN KEY (player_id) REFERENCES public.Players (player_id),
+	FOREIGN KEY (team_id) REFERENCES public.Teams (team_id),
+	cur_role text
 );
 
-create table public.Комментаторы
+create table public.Commentators
 (
-	Id_комментатора int primary key,
-	Псевдоним text,
-	ФИО text,
-	Страна text
+	commentator_id int primary key,
+	nickname text,
+	first_name text,
+	second_name text,
+	country text
 );
 
-create table public.Матчи
+create table public.Matches
 (
-	Id_команды1 int,
-	Id_команды2 int,
-	Id_победителя int,
-	Id_коментатора int,
-	FOREIGN KEY (Id_команды1) REFERENCES public.Команды (team_id),
-	FOREIGN KEY (Id_команды2) REFERENCES public.Команды (team_id),
-	FOREIGN KEY (Id_победителя) REFERENCES public.Команды (team_id),
-	FOREIGN KEY (Id_коментатора) REFERENCES public.Комментаторы (Id_комментатора),
-	Название_турнира text,
-	Дата text
+	team1_id int,
+	team2_id int,
+	winner_id int,
+	commentator_id int,
+	FOREIGN KEY (team1_id) REFERENCES public.Teams (team_id),
+	FOREIGN KEY (team2_id) REFERENCES public.Teams (team_id),
+	FOREIGN KEY (winner_id) REFERENCES public.Teams (team_id),
+	FOREIGN KEY (commentator_id) REFERENCES public.Commentators (commentator_id),
+	tournament_name text,
+	date text
 );
 
-drop table public.Игроки cascade;
-drop table public.Команды cascade;
-drop table public.ИгрокиКоманды cascade;
-drop table public.Комментаторы cascade;
-drop table public.Матчи cascade;
+drop table public.Players cascade;
+drop table public.Teams cascade;
+drop table public.PlayersTeams cascade;
+drop table public.Commentators cascade;
+drop table public.Matches cascade;
