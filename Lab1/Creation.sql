@@ -1,6 +1,6 @@
 create table public.Players
 (
-	player_id int primary key,
+	player_id serial primary key,
 	nickname text,
 	first_name text,
 	second_name text,
@@ -12,7 +12,7 @@ create table public.Players
 
 create table public.Teams
 (
-	team_id int primary key,
+	team_id serial primary key,
 	name text,
 	country text,
 	sponsor text,
@@ -30,7 +30,7 @@ create table public.PlayersTeams
 
 create table public.Commentators
 (
-	commentator_id int primary key,
+	commentator_id serial primary key,
 	nickname text,
 	first_name text,
 	second_name text,

@@ -23,8 +23,7 @@ alter table public.Matches ADD constraint tournament_name_check check (tournamen
 
 
 
-insert into public.Players(player_id, nickname, first_name, second_name, country, age, main_role, rating)
-				   values(0, 'Inlucker', 'Arseny', 'Pronin', 'Russia', 18, 'OffLaner', 7000);
+insert into public.Players values(0, 'Inlucker', 'Arseny', 'Pronin', 'Russia', 18, 'OffLaner', 7000);
 
 				  
 insert into public.Teams(team_id) values(0);

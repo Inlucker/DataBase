@@ -10,3 +10,5 @@ create table if not exists people (
 	calories int default 2000
 );
 --copy people(name, sex, age, height, weight, calories) from '/people.csv' delimiter ',' csv;
+
+--copy public.Players(nickname, first_name, second_name, country, age, main_role, rating) from '/players.csv' delimiter ',' csv;
