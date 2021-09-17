@@ -14,7 +14,7 @@ def generate_players():
         age = randint(0, 111)
         rating = randint(0, 8000)
         line = "{0},{1},{2},{3},{4},{5},{6}\n".format(
-                                                  faker.language_name(),
+                                                  faker.user_name(),
                                                   faker.first_name_male(),
                                                   faker.last_name_male(),
                                                   faker.country(),
