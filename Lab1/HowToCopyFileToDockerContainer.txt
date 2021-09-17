@@ -1,1 +1,5 @@
-docker cp people.csv pgDB:/people.csv
+docker cp players.csv pgDB:/players.csv
+docker cp teams.csv pgDB:/teams.csv
+docker cp PlayersTeams.csv pgDB:/PlayersTeams.csv
+docker cp Commentators.csv pgDB:/Commentators.csv
+docker cp Matches.csv pgDB:/Matches.csv
