@@ -4,7 +4,7 @@ drop table public.PlayersTeams cascade;
 drop table public.Commentators cascade;
 drop table public.Matches cascade;
 
-create table public.Players
+create table if not exists public.Players
 (
 	player_id serial primary key,
 	nickname text,
@@ -16,7 +16,7 @@ create table public.Players
 	rating int
 );
 
-create table public.Teams
+create table if not exists public.Teams
 (
 	team_id serial primary key,
 	name text,
@@ -25,7 +25,7 @@ create table public.Teams
 	avg_rating int
 );
 
-create table public.PlayersTeams
+create table if not exists public.PlayersTeams
 (
 	player_id int,
 	team_id int,
@@ -34,17 +34,18 @@ create table public.PlayersTeams
 	cur_role text
 );
 
-create table public.Commentators
+create table if not exists public.Commentators
 (
 	commentator_id serial primary key,
 	nickname text,
 	first_name text,
 	second_name text,
 	country text,
-	age int
+	age int,
+	popularity int
 );
 
-create table public.Matches
+create table if not exists public.Matches
 (
 	team1_id int,
 	team2_id int,
@@ -55,5 +56,6 @@ create table public.Matches
 	FOREIGN KEY (winner_id) REFERENCES public.Teams (team_id),
 	FOREIGN KEY (commentator_id) REFERENCES public.Commentators (commentator_id),
 	tournament_name text,
-	date text
+	date text,
+	popularity int
 );

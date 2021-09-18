@@ -33,16 +33,20 @@ def generateMatches(records_number):
         commentator_id = randint(1, records_number)
         date = faker.date_this_year(True, True)
         winner = ''
+        popularity = randint(1, 8000)
         if (checkDate(date)):
             winner = choice([team1_id, team2_id])
         
             
-        line = "{0}|{1}|{2}|{3}|{4}|{5}\n".format(team1_id,
+        line = "{0}|{1}|{2}|{3}|{4}|{5}|{6}\n".format(team1_id,
                                                   team2_id,
                                                   winner,
                                                   commentator_id,
                                                   faker.word().capitalize(),
-                                                  date)
+                                                  date,
+                                                  popularity)
         f.write(line)
     f.close()
     print("Finished generating Mathces")
+
+generateMatches(1000)

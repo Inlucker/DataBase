@@ -2,11 +2,15 @@ alter table public.Players ADD constraint nickname_check check (nickname is not 
 alter table public.Players ADD constraint age_check check (age>=9 and age <= 100);
 alter table public.Players ADD constraint main_role_check
 			check (main_role IN ('SafeLaner', 'MidLaner', 'OffLaner', 'SoftSupport', 'HardSupport'));
-alter table public.Players ADD constraint rating_check check (rating > 0);
+alter table public.Players ADD constraint rating_check check (rating > 0 and rating is not null);
+
+--alter table public.Players drop constraint rating_check;
 				  
 
 alter table public.Teams ADD constraint name_check check (name is not null);				  
 alter table public.Teams ADD constraint avg_rating_check check (avg_rating > 0);
+
+--alter table public.Teams drop constraint avg_rating_check;
 
 
 alter table public.PlayersTeams ADD constraint cur_role_check
@@ -15,12 +19,14 @@ alter table public.PlayersTeams ADD constraint cur_role_check
 		
 alter table public.Commentators ADD constraint nickname_check check (nickname is not null);
 alter table public.Commentators ADD constraint age_check check (age>=9 and age <= 100);
+alter table public.Commentators ADD constraint popularity_check check (popularity > 0 and popularity is not null);
 
 
 alter table public.Matches ADD constraint team1_id_check check (team1_id is not null);
 alter table public.Matches ADD constraint team2_id_check check (team2_id is not null);
 alter table public.Matches ADD constraint commentator_id_check check (commentator_id is not null);
 alter table public.Matches ADD constraint tournament_name_check check (tournament_name is not null);
+alter table public.Matches ADD constraint popularity_check check (popularity > 0 and popularity is not null);
 
 
 
