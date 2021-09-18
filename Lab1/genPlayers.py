@@ -5,6 +5,7 @@ from random import choice
 role = ["SafeLaner", "MidLaner", "OffLaner", "SoftSupport", "HardSupport"]
 
 def generatePlayers(records_number):
+    players = dict()
     faker = Faker()
     f = open('players.csv', 'w')
     for i in range(records_number):
@@ -17,6 +18,8 @@ def generatePlayers(records_number):
                                                       age,
                                                       choice(role),
                                                       rating)
+        players[i+1] = rating
         f.write(line)
     f.close()
     print("Finished generating Players")
+    return players

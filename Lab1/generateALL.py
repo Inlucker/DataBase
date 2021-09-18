@@ -6,8 +6,8 @@ from genMatches import generateMatches
 
 RECORDS_N = 1000
 
-generatePlayers(RECORDS_N)
-generateTeams(RECORDS_N)
-generatePlayersTeams(RECORDS_N)
+players = generatePlayers(RECORDS_N)
+players_teams = generatePlayersTeams(RECORDS_N, players)
+generateTeams(RECORDS_N, players_teams)
 generateCommentators(RECORDS_N)
 generateMatches(RECORDS_N)

@@ -49,4 +49,4 @@ def generateMatches(records_number):
     f.close()
     print("Finished generating Mathces")
 
-generateMatches(1000)
+#generateMatches(1000)
