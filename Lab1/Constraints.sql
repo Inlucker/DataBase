@@ -15,6 +15,8 @@ alter table public.Teams ADD constraint avg_rating_check check (avg_rating > 0);
 
 alter table public.PlayersTeams ADD constraint cur_role_check
 			check (cur_role IN ('SafeLaner', 'MidLaner', 'OffLaner', 'SoftSupport', 'HardSupport'));
+alter table public.PlayersTeams ADD constraint unique_check
+			unique (player_id, team_id)
 			
 		
 alter table public.Commentators ADD constraint nickname_check check (nickname is not null);
