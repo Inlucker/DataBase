@@ -184,11 +184,106 @@ set avg_rating = (select avg(rating)
 where team_id = (select max(team_id)
 				 from teams
 				 where country = 'Russian Federation')
-				 
-select *
-from players p join playersteams pt
-on p.player_id = pt.player_id and team_id = 996
 
+--20
+--Удаление игрково с ником 'Inlucker'
+delete from players
+where nickname = 'Inlucker'
+
+--21
+--Удаление игроков из России с рейтингом > 4000 из всех команд
+delete from playersteams 
+where player_id in (select p.player_id
+					from players p 
+					where p.country = 'Russian Federation' and p.rating > 4000)
+					
+--22
+--Посчитать среднее кол-во игроков в командах (в которых есть хотябы один игрок)
+with team_players_count(team_id, team_name, players_count) as
+(
+	select t.team_id, t.name, count(pt.player_id) as player_count
+	from teams t join playersteams pt on t.team_id = pt.team_id
+	group by t.team_id
+	order by t.team_id
+)
+select avg(players_count) as avg_players_count_in_teams
+from team_players_count
+
+--23
+with recursive rec(player_id, nickname, age) as
+(
+	select p.player_id, p.nickname, p.age
+	from players as p 
+	where country = 'Albania'
+	
+	union all 
+	
+	select p.player_id, p.nickname, p.age+1
+	from players as p inner join rec as r on p.player_id = r.age
+)
+select player_id, nickname, age
+from rec
+
+--test
+create schema dbo
+-- Создание таблицы.
+CREATE TABLE dbo.MyEmployees (
+	EmployeeID smallint NOT NULL,
+	FirstName varchar(30) NOT NULL,
+	LastName varchar(40) NOT NULL,
+	Title varchar(50) NOT NULL,
+	DeptID smallint NOT NULL,
+	ManagerID int NULL,
+	CONSTRAINT PK_EmployeeID PRIMARY KEY (EmployeeID)
+);
+-- Заполнение таблицы значениями.
+INSERT INTO dbo.MyEmployees
+VALUES (8, 'Иван', 'Петров', 'Главный исполнительный директор',16,5) ;
+-- Определение ОТВ
+with recursive DirectReports (ManagerID, EmployeeID, Title, DeptID, Level) AS
+(
+	-- Определение закрепленного элемента
+	SELECT e.ManagerID, e.EmployeeID, e.Title, e.DeptID, 0 AS Level
+	FROM dbo.MyEmployees AS e
+	WHERE ManagerID IS NULL
+	UNION ALL
+	-- Определение рекурсивного элемента
+	SELECT e.ManagerID, e.EmployeeID, e.Title, e.DeptID, Level + 1
+	FROM dbo.MyEmployees AS e INNER JOIN DirectReports AS d
+		ON e.ManagerID = d.EmployeeID
+)
+-- Инструкция, использующая ОТВ
+SELECT ManagerID, EmployeeID, Title, DeptID, Level
+FROM DirectReports;
+
+--24
+--средние возраста для ролей
+select distinct main_role,
+	avg(age) over(partition by p.main_role) as AvgAge,
+	min(age) over(partition by p.main_role) as MinAge,
+	max(age) over(partition by p.main_role) as MaxAge
+from players p 
+
+--таблица для сравнениея рейтинга игроков на конкретных ролях
+select player_id, nickname, main_role, rating,
+	avg(rating) over(partition by p.main_role) as avg_rating,
+	min(rating) over(partition by p.main_role) as min_rating,
+	max(rating) over(partition by p.main_role) as max_rating	
+from players p 
+
+--25
+--Оконные функции для устранения дублей
+select player_id, nickname
+from
+(
+	select * 
+	from (select pt.player_id, p.nickname,
+		  row_number() over (partition by pt.player_id) as row
+		  from players as p join playersteams as pt on p.player_id = pt.player_id) as ppt
+		where row = 1
+) as ppt2
+
+	  
 --Получить таблицу ников игрков и соответсвующих им имён команд
 select distinct p.player_id, nickname as player_nickname, t.team_id, t.name as team_name
 from players p join playersteams pt on p.player_id = pt.player_id join teams t on t.team_id = pt.team_id 
