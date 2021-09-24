@@ -65,9 +65,29 @@ select nickname,
 from players
 
 --11
+select t.team_id, t.name, count(pt.player_id) as player_count
+into team_players_count
+from teams t join playersteams pt on t.team_id = pt.team_id
+group by t.team_id
+order by t.team_id
 
+drop table public.team_players_count cascade;
+
+
+select c.commentator_id, c.nickname, count(mc.commentator_id) as matches_count
+from commentators c join (select m.commentator_id
+						 from matches m) as mc on c.commentator_id = mc.commentator_id
+group by c.commentator_id
+order by matches_count desc
 
 --12
+select p.player_id, p.nickname 
+from players p join (select player_id, team_id
+				   from playersteams
+				   where team_id in (select team_id
+				   					 from teams t
+				   					 where country = 'Afghanistan')) as af_teams on p.player_id = af_teams.player_id
+group by p.player_id, af_teams.player_id, af_teams.team_id
 
 --13
 select *
@@ -82,10 +102,17 @@ where team1_id IN (select distinct team_id
 order by date
 
 --14
-select	
+select c.country, count(c.commentator_id) as commentators_count
+from commentators c
+group by c.country
+order by c.country
 
 --15
-select
+select c.country, count(c.commentator_id) as commentators_count
+from commentators c
+group by c.country
+having count(c.commentator_id) > 5
+order by commentators_count
 				 
 --Получить таблицу ников игрков и соответсвующих им имён команд
 select distinct p.player_id, nickname as player_nickname, t.team_id, t.name as team_name
