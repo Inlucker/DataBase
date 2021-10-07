@@ -235,7 +235,7 @@ with recursive rec(winner_id, team1_id, team2_id, level) as
 (
 	select winner_id, team1_id, team2_id, 0 as level
 	from matches as m
-	where winner_id = 2
+	where winner_id = 4
 	
 	union all 
 	
@@ -350,3 +350,73 @@ where p.nickname is null
 select player_id, p.nickname as player_nickname, p.country
 from players p
 where country = 'Angola' or country = 'Niger'
+
+
+--Защита: комментаторы 7-8к участвовавшие в матчах за последние пол года
+SELECT distinct m.commentator_id, c.first_name 
+FROM matches m join commentators c on m.commentator_id = c.commentator_id 
+WHERE date BETWEEN '2021-04-07' AND '2021-10-07'
+	  and m.commentator_id in (select c2.commentator_id
+	  						 from commentators c2
+	  						 where popularity >= 7000)
+
+--Доп задание на 3 бала
+drop schema lab_02
+create schema lab_02
+	  						 
+drop table if exists lab_02.table1 cascade;
+drop table if exists lab_02.table2 cascade;
++
+create table lab_02.table1 (
+id integer,
+var1 text,
+valid_from_dttm date,
+valid_to_dttm date
+);
+
+create table lab_02.table2 (
+id integer,
+var2 text,
+valid_from_dttm date,
+valid_to_dttm date
+);
+
+insert into lab_02.table1 (id, var1, valid_from_dttm, valid_to_dttm)
+values (1, 'A', '2018-09-01', '2018-09-15');
+insert into lab_02.table1 (id, var1, valid_from_dttm, valid_to_dttm)
+values (1, 'B', '2018-09-16', '5999-12-31');
+
+insert into lab_02.table2 (id, var2, valid_from_dttm, valid_to_dttm)
+values (1, 'A', '2018-09-01', '2018-09-18');
+insert into lab_02.table2 (id, var2, valid_from_dttm, valid_to_dttm)
+values (1, 'B', '2018-09-19', '5999-12-31');	 
+
+Select t1.id, var1, var2, t1.valid_from_dttm as t1_valid_from_dttm, t1.valid_to_dttm as t1_valid_to_dttm,
+						  t2.valid_from_dttm as t2_valid_from_dttm, t2.valid_to_dttm as t2_valid_to_dttm
+from lab_02.table1 t1 join lab_02.table2 t2 on t1.id = t2.id
+
+--DONE
+select *
+from (
+	select t1.id, var1, var2, t1.valid_from_dttm, t1.valid_to_dttm
+	from lab_02.table1 t1 join lab_02.table2 t2 on t1.id = t2.id
+	where t1.valid_from_dttm >= t2.valid_from_dttm and t1.valid_to_dttm <= t2.valid_to_dttm
+		  and t1.valid_from_dttm < t1.valid_to_dttm
+union 
+	(select t1.id, var1, var2, t2.valid_from_dttm, t2.valid_to_dttm
+	from lab_02.table1 t1 join lab_02.table2 t2 on t1.id = t2.id
+	where t1.valid_from_dttm < t2.valid_from_dttm and t1.valid_to_dttm > t2.valid_to_dttm
+		  and t2.valid_from_dttm < t2.valid_to_dttm)
+union 
+	(select t1.id, var1, var2, t1.valid_from_dttm, t2.valid_to_dttm
+	from lab_02.table1 t1 join lab_02.table2 t2 on t1.id = t2.id
+	where t1.valid_from_dttm >= t2.valid_from_dttm and t1.valid_to_dttm > t2.valid_to_dttm
+		  and t1.valid_from_dttm < t2.valid_to_dttm)
+union 
+	(select t1.id, var1, var2, t2.valid_from_dttm, t1.valid_to_dttm
+	from lab_02.table1 t1 join lab_02.table2 t2 on t1.id = t2.id
+	where t1.valid_from_dttm < t2.valid_from_dttm and t1.valid_to_dttm <= t2.valid_to_dttm
+		  and t2.valid_from_dttm < t1.valid_to_dttm)
+order by var1, var2) as lol
+
+
