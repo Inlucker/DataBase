@@ -101,7 +101,7 @@ BEGIN
 	update teams
 	set avg_rating = (select avg(rating)
 					  from players p join playersteams pt
-					  on p.player_id = pt.player_id and team_id = t_id) + 1
+					  on p.player_id = pt.player_id and team_id = t_id) - 1
 	where team_id = t_id;
 end
 $$ language plpgsql;
@@ -126,7 +126,7 @@ $$ language plpgsql;
 
 drop procedure updatePlayersRating(int, int);
 
-call updatePlayersRating(999, 7777);
+call updatePlayersRating(998, 7777);
 
 --3) Хранимую процедуру с курсором
 
@@ -255,3 +255,19 @@ insert into players (nickname, first_name, second_name, country, age, main_role,
 					
 delete from players
 where nickname = 'Inlucker'
+
+--защита
+create OR REPLACE function getPLayerByRating(int)
+returns setof players
+as $$
+begin
+    return query(
+        select *
+        from players p
+        where p.rating = $1);
+end $$ language 'plpgsql';
+
+drop function getPLayerByRating(int);
+
+select * from getPLayerByRating(7777)
+
