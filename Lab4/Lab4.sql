@@ -51,7 +51,7 @@ as $$
     plan = plpy.prepare("update teams set avg_rating = \
 							(select avg(rating) \
 							from players p join playersteams pt \
-							on p.player_id = pt.player_id and team_id = $1) - 1 \
+							on p.player_id = pt.player_id and team_id = $1) + 1 \
 						where team_id = $1", ["int"])
     result = plpy.execute(plan, [t_id])
 $$ language PLPYTHON3U;
@@ -113,3 +113,65 @@ $$ LANGUAGE PLPYTHON3U;
 SELECT * FROM make_pnr('Inlucker', 6500);
 
 drop function make_pnr(text, int);
+
+--защита
+--Процедура для создания нового игрока и добавления его в конкретную команду.
+--Ввести имя команды и затем распечатать ее обновленный список команды.
+
+create OR REPLACE procedure printPlayersFromTeam(t_id int)
+as $$
+declare
+	team_name RECORD;
+	r RECORD;
+begin
+	select into team_name name from teams where team_id = t_id;
+	raise notice 'Team name: %', team_name.name;
+	raise notice 'Players:';
+	
+	for r in 
+	select nickname from players where player_id in
+	(SELECT player_id FROM playersteams where team_id = t_id)
+	loop
+		raise notice '%', r.nickname;
+	end loop;
+end
+$$ language plpgsql;
+
+call printPlayersFromTeam(997);
+
+drop procedure printPlayersFromTeam(int);
+
+create OR REPLACE procedure addNewPlayer
+(
+	nickname text,
+	first_name text,
+	second_name text,
+	country text,
+	age int,
+	main_role text,
+	rating int,
+	team_id int
+)
+as $$
+    plan = plpy.prepare("insert into players (nickname, first_name, second_name, country, age, main_role, rating) \
+						 values($1, $2, $3, $4, $5, $6, $7)", ["text", "text", "text", "text", "int", "text", "int"])
+    result = plpy.execute(plan, [nickname, first_name, second_name, country, age, main_role, rating])
+    plan = plpy.prepare("insert into playersteams (player_id, cur_role, team_id) \
+						 select player_id, main_role, $1 from players where nickname = 'Inlucker'", ["int"])
+    result = plpy.execute(plan, [team_id])
+    plpy.execute("call printPlayersFromTeam(997)");
+$$ language PLPYTHON3U;
+
+call addNewPlayer('Inlucker', 'Arseny', 'Pronin', 'Russia', 18, 'OffLaner', 7000, 997);
+
+drop procedure addNewPlayer(text, text, text, text, int, text, int, int);
+
+--tests
+insert into public.Players (nickname, first_name, second_name, country, age, main_role, rating)
+values('Inlucker', 'Arseny', 'Pronin', 'Russia', 18, 'OffLaner', 7000);
+
+insert into playersteams (player_id, cur_role, team_id)
+select player_id, main_role, 997 from players where nickname = 'Inlucker'
+
+delete from playersteams where player_id >= 1005;
+delete from players where player_id >= 1005;
