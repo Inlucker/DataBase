@@ -21,7 +21,7 @@ delete from public.Players;
 
 --create tmp table for json->table
 DROP TABLE IF EXISTS tmp_json;
-CREATE TABLE tmp_json
+CREATE TEMP TABLE tmp_json
 (
     row jsonb
 );
@@ -82,3 +82,53 @@ SELECT (row->>'team1_id')::int,
 		(row->>'tournament_name')::text,
 		(row->>'date')::text,
 		(row->>'popularity')::int FROM tmp_json;
+		
+--3)
+--Creation
+DROP TABLE IF EXISTS json_test;
+CREATE temp TABLE json_test
+(
+    row jsonb
+);
+
+--Insertion
+INSERT INTO json_test VALUES
+('{"nickname": "Inlucker", "first_name": "Arseny", "second_name": "Pronin", "Country": "Russia", "age": 21, "main_role": "Offlaner", "rating": 6500}'),
+('{"nickname": "SMOKE", "first_name": "Ivan", "second_name": "Ivanov", "Country": "Russia", "age": 18, "main_role": "DeadInside", "rating": 7000}');
+
+select * from json_test;
+
+--4.1)
+select * from json_test
+where (row->>'nickname')::text = 'Inlucker';
+
+--4.2)
+SELECT row->'nickname' nickname, row->'main_role' main_role FROM json_test;
+
+--4.3)
+CREATE OR REPLACE FUNCTION key_exists(some_json json, outer_key text)
+RETURNS boolean AS $$
+BEGIN
+    RETURN (some_json->outer_key) IS NOT NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+select key_exists('{"nickname": "Inlucker", "first_name": "Arseny", "second_name": "Pronin"}'::json, 'first_name');
+select key_exists('{"nickname": "Inlucker", "first_name": "Arseny", "second_name": "Pronin"}'::json, 'third_name');
+
+--4.4)
+-- ялнсй->SMOKE
+update json_test
+SET row = jsonb_set(row, '{nickname}', '"ялнсй"', true)
+where (row->>'nickname')::text = 'SMOKE';
+
+-- SMOKE->ялнсй
+UPDATE json_test SET row = row || '{"nickname":"SMOKE"}'::jsonb where (row->>'nickname')::text = 'ялнсй';
+
+
+--4.5)
+select * from jsonb_array_elements
+('[
+	{"nickname": "Inlucker", "first_name": "Arseny", "second_name": "Pronin", "Country": "Russia", "age": 21, "main_role": "Offlaner", "rating": 6500},
+	{"nickname": "SMOKE", "first_name": "Ivan", "second_name": "Ivanov", "Country": "Russia", "age": 18, "main_role": "DeadInside", "rating": 7000}
+]')
