@@ -29,9 +29,33 @@ WHERE table_type='VIEW' AND table_schema=ANY(current_schemas(false))
 ORDER BY table_name;
 
 --5)
+create OR REPLACE function minAge()
+returns int
+as $$
+begin
+    return (select min(age) from players);
+end;
+$$ LANGUAGE 'plpgsql';
+
+drop function  minAge();
+
 select minAge();
 
 --6)
+create OR REPLACE function YoungPlayers()
+returns setof players
+as $$
+declare
+    min int;
+begin
+	min := minAge();
+	return query(select p.*
+        from players p
+        where p.age = min);
+end $$ language 'plpgsql';
+
+drop function YoungPlayers();
+
 select nickname, age from YoungPlayers();
 
 --7)
@@ -74,3 +98,8 @@ insert into Tournaments (name, country, city, prize_pool, start_date, end_date)
 values('The International 10', 'Romania', 'Bucharest', '$40,018,195 USD', '10-07-2021', '10-17-2021');
 insert into Tournaments (name, country, city, prize_pool, start_date, end_date)
 values('EPICENTER', 'Russia', 'Moscow ', '$1,000,000 USD', '06-22-2019', '06-30-2019');
+
+--11) Def - самый попул€рный матч дл€ комментатора
+select * from matches where popularity =
+(select max(popularity)
+from matches where commentator_id = 2)

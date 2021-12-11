@@ -131,11 +131,20 @@ def f10():
     execute_query(connection, q10)
 
 
+#Def - самый популярный матч для комментатора
+def f11(cid):
+    q11 ="""
+        select * from matches where popularity =
+        (select max(popularity)
+        from matches where commentator_id = 2)
+        """.format(cid)
+    return execute_read_query(connection, q11)
+
 connection = create_connection("postgres", "postgres", "postgres", "localhost", "5432")
 
 n = int(input("Введите номер запроса: "));
 
-while (n > 0 and n <= 10):
+while (n > 0 and n <= 11):
     if (n == 1):
         rez = f1()
         print(rez)
@@ -164,6 +173,10 @@ while (n > 0 and n <= 10):
         f9()
     elif (n == 10):
         f10()
+    elif (n == 11):
+        cid = input("Введите id комментатора: ")
+        rez = f11(cid)
+        print(rez)
     
     n = int(input("Введите номер запроса: "));
 
