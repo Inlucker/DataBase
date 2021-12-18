@@ -89,10 +89,12 @@ def q5(players, age):
     return rez
 
 players = Enumerable(get_players('../Lab1/players.csv'))
+#print(players)
 playersteams = Enumerable(get_playersteams('../Lab1/PlayersTeams.csv'))
 #for i in playersteams:
 #   print(i)
 
+#TASK 2
 #rez = q1(players)
 #rez = q2(players)
 #print(q3(players))
