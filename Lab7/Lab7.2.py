@@ -1,5 +1,6 @@
-from py_linq import *
 import psycopg2
+from psycopg2 import OperationalError
+from py_linq import *
 
 def create_connection(db_name, db_user, db_password, db_host, db_port):
     connection = None
@@ -32,7 +33,7 @@ def execute_read_query(connection, query):
         cursor.execute(query)
         result = cursor.fetchall()
         return result
-    except Error as e:
+    except OperationalError as e:
         print(f"The error '{e}' occurred")
 
 #PLAYERS
@@ -73,10 +74,26 @@ def read_from_json():
 		i['country'], i['age'], i['main_role'], i['rating']).get())
     return rez
 
+
+def update_json(players):
+    for i in players:
+        if (i['main_role'] == 'OffLaner'):
+            i['rating'] += 23
+
+def add_to_json(players):
+    players.append(player(1001, 'Inlucker', 'Arseny', 'Pronin',
+		'Russia', '18', 'Offlaner', '6660').get())
+
+
 connection = create_connection("postgres", "postgres", "postgres", "localhost", "5432")
 
 players = read_from_json()
-for i in json:
+
+update_json(players)
+
+add_to_json(players)
+
+for i in players:
     print(i)
 
 connection.close()
